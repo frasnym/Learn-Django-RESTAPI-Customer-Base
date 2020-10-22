@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django.http.response import HttpResponseForbidden
 
 from .models import Customer, Profession, DataSheet, Document
 from .serializers import (
@@ -28,6 +29,12 @@ class CustomerViewSet(viewsets.ModelViewSet):
         # import pdb; pdb.set_trace() # ? Create Breakpoints
         customers = Customer.objects.filter(id=3)
         serializer = CustomerSerializer(customers, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        # return HttpResponseForbidden('Not Allowed') # ? Response Manual
+        obj = self.get_object()
+        serializer = CustomerSerializer(obj)
         return Response(serializer.data)
 
 
