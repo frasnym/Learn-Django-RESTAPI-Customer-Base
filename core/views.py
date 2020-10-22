@@ -22,11 +22,15 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # import pdb; pdb.set_trace() # ? Create Breakpoints
 
-        id = self.request.query_params.get('id', None)
-        status = True if self.request.query_params.get('active') == 'True' else False
+        # id = self.request.query_params.get('id', None)
+        address = self.request.query_params.get('address', None)
+        if self.request.query_params.get('active') == 'False':
+            status = False
+        else:
+            status = True
 
-        if id:
-            customers = Customer.objects.filter(id=id, active=status)
+        if address:
+            customers = Customer.objects.filter(address__icontains=address, active=status)
         else:
             customers = Customer.objects.filter(active=status)
             
