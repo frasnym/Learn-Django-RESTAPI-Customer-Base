@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.http.response import HttpResponseForbidden
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Customer, Profession, DataSheet, Document
 from .serializers import (
@@ -17,6 +18,9 @@ from .serializers import (
 
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
+    # DjangoFilterBackend available on this class
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name']
 
     # ? Override Method get_queryset
     def get_queryset(self):
@@ -37,13 +41,13 @@ class CustomerViewSet(viewsets.ModelViewSet):
         return customers
 
     # ? Override List method behaviour
-    def list(self, request, *args, **kwargs):
-        # import pdb; pdb.set_trace() # ? Create Breakpoints
-        # customers = Customer.objects.filter(id=3)
-        # customers = Customer.objects.all()
-        customers = self.get_queryset()
-        serializer = CustomerSerializer(customers, many=True)
-        return Response(serializer.data)
+    # def list(self, request, *args, **kwargs):
+    #     # import pdb; pdb.set_trace() # ? Create Breakpoints
+    #     # customers = Customer.objects.filter(id=3)
+    #     # customers = Customer.objects.all()
+    #     customers = self.get_queryset()
+    #     serializer = CustomerSerializer(customers, many=True)
+    #     return Response(serializer.data)
 
     # ? Override Retrieve method behaviour
     def retrieve(self, request, *args, **kwargs):
