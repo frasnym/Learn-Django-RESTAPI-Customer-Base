@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.http.response import HttpResponseForbidden
 
 from .models import Customer, Profession, DataSheet, Document
@@ -94,6 +95,44 @@ class CustomerViewSet(viewsets.ModelViewSet):
         customer.delete()
 
         return Response("Object removed")
+
+    # ? Custom Method
+    @action(detail=True)
+    def deactivate(self, request, *args, **kwargs):
+        customer = self.get_object()
+        customer.active = False
+
+        customer.save()
+
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def deactivate_all(self, request, *args, **kwargs):
+        customers = Customer.objects.all()
+        customers.update(active=False)
+
+        serializer = CustomerSerializer(customers, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def activate_all(self, request, *args, **kwargs):
+        customers = Customer.objects.all()
+        customers.update(active=True)
+
+        serializer = CustomerSerializer(customers, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['POST'])
+    def change_status(self, request, *args, **kwargs):
+        status = True if request.data['active'] == 'True' else False
+
+        customers = Customer.objects.all()
+        customers.update(active=status)
+
+        serializer = CustomerSerializer(customers, many=True)
+        return Response(serializer.data)
+
 
 
 class ProfessionViewSet(viewsets.ModelViewSet):
