@@ -88,6 +88,13 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serializer = CustomerSerializer(customer)
         return Response(serializer.data)
 
+    # ? Override Destroy method behaviour
+    def destroy(self, request, *args, **kwargs):
+        customer = self.get_object()
+        customer.delete()
+
+        return Response("Object removed")
+
 
 class ProfessionViewSet(viewsets.ModelViewSet):
     # queryset = Profession.objects.filter(id=2) # ? Filter only id=2 will be shown
