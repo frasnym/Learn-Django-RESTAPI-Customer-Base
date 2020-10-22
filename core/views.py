@@ -27,7 +27,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # ? Override List method behaviour
     def list(self, request, *args, **kwargs):
         # import pdb; pdb.set_trace() # ? Create Breakpoints
-        customers = Customer.objects.filter(id=3)
+        # customers = Customer.objects.filter(id=3)
+        customers = Customer.objects.all()
         serializer = CustomerSerializer(customers, many=True)
         return Response(serializer.data)
 
@@ -35,6 +36,22 @@ class CustomerViewSet(viewsets.ModelViewSet):
         # return HttpResponseForbidden('Not Allowed') # ? Response Manual
         obj = self.get_object()
         serializer = CustomerSerializer(obj)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        print(data)
+        customer = Customer.objects.create(
+            name = data['name'],
+            address = data['address'],
+            data_sheet_id = data['data_sheet'],
+            # profession = data['profession']
+        )
+        profession = Profession.objects.get(id=data['professions'])
+        customer.professions.add(profession)
+        customer.save()
+
+        serializer = CustomerSerializer(customer)
         return Response(serializer.data)
 
 
