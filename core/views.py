@@ -22,14 +22,22 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # import pdb; pdb.set_trace() # ? Create Breakpoints
 
-        active_customers = Customer.objects.filter(active=True)
-        return active_customers
+        id = self.request.query_params.get('id', None)
+        status = True if self.request.query_params.get('active') == 'True' else False
+
+        if id:
+            customers = Customer.objects.filter(id=id, active=status)
+        else:
+            customers = Customer.objects.filter(active=status)
+            
+        return customers
 
     # ? Override List method behaviour
     def list(self, request, *args, **kwargs):
         # import pdb; pdb.set_trace() # ? Create Breakpoints
         # customers = Customer.objects.filter(id=3)
-        customers = Customer.objects.all()
+        # customers = Customer.objects.all()
+        customers = self.get_queryset()
         serializer = CustomerSerializer(customers, many=True)
         return Response(serializer.data)
 
@@ -132,7 +140,6 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
         serializer = CustomerSerializer(customers, many=True)
         return Response(serializer.data)
-
 
 
 class ProfessionViewSet(viewsets.ModelViewSet):
