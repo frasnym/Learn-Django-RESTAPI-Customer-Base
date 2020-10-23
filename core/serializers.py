@@ -17,7 +17,24 @@ class ProfessionSerializer(serializers.ModelSerializer):
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = ['id', 'dtype', 'doc_number', 'customer']
+        fields = [
+            'id',
+            'dtype',
+            'doc_number',
+            'customer'
+        ]
+
+
+class DocumentSerializerCreate(serializers.ModelSerializer):
+    class Meta:
+        model = Document
+        fields = [
+            'id',
+            'dtype',
+            'doc_number',
+            'customer'
+        ]
+        read_only_fields = ['customer']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -29,7 +46,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     # professions = serializers.StringRelatedField(many=True)
     professions = ProfessionSerializer(many=True)
     # document_set = serializers.StringRelatedField(many=True)
-    document_set = DocumentSerializer(many=True, read_only=True)
+    document_set = DocumentSerializerCreate(many=True)
 
     class Meta:
         model = Customer
@@ -37,10 +54,23 @@ class CustomerSerializer(serializers.ModelSerializer):
                   'data_sheet', 'active', 'status_message', 'code', 'document_set']
 
     def create(self, validated_data):
+        import pdb
+        pdb.set_trace()
         professions = validated_data['professions']
         del validated_data['professions']
 
-        customer = Customer.objects.create(**validated_data) # ? ** = itterate key & value
+        document_set = validated_data['document_set']
+        del validated_data['document_set']
+
+        customer = Customer.objects.create(
+            **validated_data)  # ? ** = itterate key & value
+
+        for doc in document_set:
+            Document.objects.create(
+                dtype=doc['dtype'],
+                doc_number=doc['doc_number'],
+                customer_id=customer.id
+            )
 
         for profession in professions:
             prof = Profession.objects.create(**profession)
