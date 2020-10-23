@@ -22,6 +22,7 @@ class Customer(models.Model):
     professions = models.ManyToManyField(Profession)
     data_sheet = models.OneToOneField(DataSheet, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
+    code = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
