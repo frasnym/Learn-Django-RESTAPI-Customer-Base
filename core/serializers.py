@@ -6,14 +6,21 @@ from .models import Customer, Profession, DataSheet, Document
 
 class CustomerSerializer(serializers.ModelSerializer):
     num_professions = serializers.SerializerMethodField()
+    data_sheet = serializers.SerializerMethodField()
+    # data_sheet = serializers.StringRelatedField() # ? Example of StringRelatedField
+    professions = serializers.StringRelatedField(many=True)
+    document_set = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Customer
         fields = ['id', 'name', 'address', 'professions', 'num_professions',
-                  'data_sheet', 'active', 'status_message', 'code']
+                  'data_sheet', 'active', 'status_message', 'code', 'document_set']
 
     def get_num_professions(self, obj):
         return obj.count_professions()
+
+    def get_data_sheet(self, obj):
+        return obj.data_sheet.description
 
 
 class ProfessionSerializer(serializers.ModelSerializer):
