@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from django.http.response import HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -13,14 +14,15 @@ from .serializers import (
     DocumentSerializer,
 )
 
-# ViewSets define the view behavior.
-
 
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     # DjangoFilterBackend available on this class
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['name']
+    search_fields = ['name', 'address', 'data_sheet__description']
+    # search_fields = ['=name'] # ? iexact
+    # search_fields = ['^name'] # ? istartswith
 
     # ? Override Method get_queryset
     def get_queryset(self):
@@ -34,10 +36,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
             status = True
 
         if address:
-            customers = Customer.objects.filter(address__icontains=address, active=status)
+            customers = Customer.objects.filter(
+                address__icontains=address, active=status)
         else:
             customers = Customer.objects.filter(active=status)
-            
+
         return customers
 
     # ? Override List method behaviour
