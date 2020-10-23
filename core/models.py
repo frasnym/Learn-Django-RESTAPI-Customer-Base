@@ -24,6 +24,13 @@ class Customer(models.Model):
     active = models.BooleanField(default=True)
     code = models.CharField(max_length=50, unique=True)
 
+    @property
+    def status_message(self):
+        if self.active:
+            return 'Active'
+        else:
+            return 'Inactive'
+
     def __str__(self):
         return self.name
 

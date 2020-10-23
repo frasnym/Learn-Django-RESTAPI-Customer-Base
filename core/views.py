@@ -28,7 +28,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # search_fields = ['=name'] # ? iexact
     # search_fields = ['^name'] # ? istartswith
 
-    lookup_field = 'code' # ? Default is id, ex: http://127.0.0.1:8000/api/customers/3/. Now like this: http://127.0.0.1:8000/api/customers/Cust2/
+    lookup_field = 'code' # ? Default is id, ex: http://127.0.0.1:8000/api/customers/3/. Now like this: http://127.0.0.1:8000/api/customers/CS001/
 
     # ? Override Method get_queryset
     def get_queryset(self):
