@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.http.response import HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -165,6 +165,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
 class ProfessionViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAdminUser,]
 
     # queryset = Profession.objects.filter(id=2) # ? Filter only id=2 will be shown
     queryset = Profession.objects.all()
@@ -179,5 +180,8 @@ class DataSheetViewSet(viewsets.ModelViewSet):
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticatedOrReadOnly,]
+
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
