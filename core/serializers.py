@@ -42,7 +42,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     # data_sheet = serializers.SerializerMethodField()
     # data_sheet = serializers.StringRelatedField() # ? Example of StringRelatedField
     # data_sheet = serializers.PrimaryKeyRelatedField(read_only=True) # ? Example of PrimaryKeyRelatedField
-    data_sheet = DataSheetSerializer(read_only=True)  # ? Nested Serializer
+    data_sheet = DataSheetSerializer()  # ? Nested Serializer
     # professions = serializers.StringRelatedField(many=True)
     professions = ProfessionSerializer(many=True)
     # document_set = serializers.StringRelatedField(many=True)
@@ -54,16 +54,20 @@ class CustomerSerializer(serializers.ModelSerializer):
                   'data_sheet', 'active', 'status_message', 'code', 'document_set']
 
     def create(self, validated_data):
-        import pdb
-        pdb.set_trace()
         professions = validated_data['professions']
         del validated_data['professions']
 
         document_set = validated_data['document_set']
         del validated_data['document_set']
 
+        data_sheet = validated_data['data_sheet']
+        del validated_data['data_sheet']
+
+        d_sheet = DataSheet.objects.create(**data_sheet)
+
         customer = Customer.objects.create(
             **validated_data)  # ? ** = itterate key & value
+        customer.data_sheet = d_sheet
 
         for doc in document_set:
             Document.objects.create(
