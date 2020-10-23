@@ -14,29 +14,44 @@ class ProfessionSerializer(serializers.ModelSerializer):
         fields = ['id', 'description']
 
 
+class DocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Document
+        fields = ['id', 'dtype', 'doc_number', 'customer']
+
+
 class CustomerSerializer(serializers.ModelSerializer):
     num_professions = serializers.SerializerMethodField()
     # data_sheet = serializers.SerializerMethodField()
     # data_sheet = serializers.StringRelatedField() # ? Example of StringRelatedField
     # data_sheet = serializers.PrimaryKeyRelatedField(read_only=True) # ? Example of PrimaryKeyRelatedField
-    data_sheet = DataSheetSerializer()  # ? Nested Serializer
+    data_sheet = DataSheetSerializer(read_only=True)  # ? Nested Serializer
     # professions = serializers.StringRelatedField(many=True)
     professions = ProfessionSerializer(many=True)
-    document_set = serializers.StringRelatedField(many=True)
+    # document_set = serializers.StringRelatedField(many=True)
+    document_set = DocumentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Customer
         fields = ['id', 'name', 'address', 'professions', 'num_professions',
                   'data_sheet', 'active', 'status_message', 'code', 'document_set']
 
+    def create(self, validated_data):
+        professions = validated_data['professions']
+        del validated_data['professions']
+
+        customer = Customer.objects.create(**validated_data) # ? ** = itterate key & value
+
+        for profession in professions:
+            prof = Profession.objects.create(**profession)
+            customer.professions.add(prof)
+
+        customer.save()
+
+        return customer
+
     def get_num_professions(self, obj):
         return obj.count_professions()
 
     # def get_data_sheet(self, obj):
     #     return obj.data_sheet.description
-
-
-class DocumentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Document
-        fields = ['id', 'dtype', 'doc_number', 'customer']

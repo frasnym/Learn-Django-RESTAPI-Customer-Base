@@ -77,22 +77,22 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serializer = CustomerSerializer(obj)
         return Response(serializer.data)
 
-    # ? Override Create method behaviour
-    def create(self, request, *args, **kwargs):
-        data = request.data
-        print(data)
-        customer = Customer.objects.create(
-            name=data['name'],
-            address=data['address'],
-            data_sheet_id=data['data_sheet'],
-            # profession = data['profession']
-        )
-        profession = Profession.objects.get(id=data['professions'])
-        customer.professions.add(profession)
-        customer.save()
+    # # ? Override Create method behaviour
+    # def create(self, request, *args, **kwargs):
+    #     data = request.data
+    #     print(data)
+    #     customer = Customer.objects.create(
+    #         name=data['name'],
+    #         address=data['address'],
+    #         data_sheet_id=data['data_sheet'],
+    #         # profession = data['profession']
+    #     )
+    #     profession = Profession.objects.get(id=data['professions'])
+    #     customer.professions.add(profession)
+    #     customer.save()
 
-        serializer = CustomerSerializer(customer)
-        return Response(serializer.data)
+    #     serializer = CustomerSerializer(customer)
+    #     return Response(serializer.data)
 
     # ? Override Update method behaviour
     def update(self, request, *args, **kwargs):
