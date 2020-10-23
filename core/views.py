@@ -3,6 +3,8 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny
 from django.http.response import HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -29,6 +31,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # search_fields = ['^name'] # ? istartswith
 
     lookup_field = 'code' # ? Default is id, ex: http://127.0.0.1:8000/api/customers/3/. Now like this: http://127.0.0.1:8000/api/customers/CS001/
+
+    authentication_classes = [TokenAuthentication,] # ? Authentication Settings
 
     # ? Override Method get_queryset
     def get_queryset(self):
@@ -160,12 +164,16 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
 
 class ProfessionViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication,]
+
     # queryset = Profession.objects.filter(id=2) # ? Filter only id=2 will be shown
     queryset = Profession.objects.all()
     serializer_class = ProfessionSerializer
 
 
 class DataSheetViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny,] # ? Permission Settings
+
     queryset = DataSheet.objects.all()
     serializer_class = DataSheetSerializer
 
