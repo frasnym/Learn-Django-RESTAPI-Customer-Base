@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django.http.response import HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -18,9 +18,13 @@ from .serializers import (
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     # DjangoFilterBackend available on this class
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['name']
-    search_fields = ['name', 'address', 'data_sheet__description']
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    filterset_fields = ['name']  # ? Filtering Search
+    ordering_fields = ['id', 'name']  # ? Ordering Search
+    # ordering_fields = '__all__' # ? Ordering by All Fields
+    ordering = ['-id'] # ? Default Ordering
+    search_fields = ['name', 'address', 'data_sheet__description', ]  # ? Field Filtered
     # search_fields = ['=name'] # ? iexact
     # search_fields = ['^name'] # ? istartswith
 
