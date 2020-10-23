@@ -5,9 +5,15 @@ from .models import Customer, Profession, DataSheet, Document
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    num_professions = serializers.SerializerMethodField()
+
     class Meta:
         model = Customer
-        fields = ['id', 'name', 'address', 'professions', 'data_sheet', 'active', 'status_message', 'code']
+        fields = ['id', 'name', 'address', 'professions', 'num_professions',
+                  'data_sheet', 'active', 'status_message', 'code']
+
+    def get_num_professions(self, obj):
+        return obj.count_professions()
 
 
 class ProfessionSerializer(serializers.ModelSerializer):

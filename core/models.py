@@ -31,6 +31,9 @@ class Customer(models.Model):
         else:
             return 'Inactive'
 
+    def count_professions(self):
+        return self.professions.all().count()
+
     def __str__(self):
         return self.name
 
